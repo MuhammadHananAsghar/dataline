@@ -5,7 +5,14 @@ import { Input } from "@catalyst/input";
 import { Button } from "@catalyst/button";
 import { enqueueSnackbar } from "notistack";
 import { useNavigate } from "@tanstack/react-router";
-import { CloudArrowUpIcon, DocumentCheckIcon } from "@heroicons/react/24/solid";
+import { 
+  CloudArrowUpIcon, 
+  DocumentCheckIcon,
+  CircleStackIcon,
+  DocumentTextIcon,
+  TableCellsIcon,
+  DocumentIcon
+} from "@heroicons/react/24/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useCreateConnection, useCreateFileConnection } from "@/hooks";
 import { DatabaseFileType } from "@components/Library/types";
@@ -212,38 +219,119 @@ const ConnectionCreator = ({ name = null }: { name: string | null }) => {
 
   return (
     <>
-      <Fieldset>
-        <Legend>Create a custom connection</Legend>
+      <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-6">
+          Create a custom connection
+        </h3>
+        
         <RadioGroup
           defaultValue=""
           onChange={(selection: string) =>
             setSelectedRadio(selection as RadioValue)
           }
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
-          <RadioField>
-            <Radio value="database" color="white" />
-            <Label className="cursor-pointer">
-              Postgres, MySQL, Snowflake, or MS SQL Server connection string
-            </Label>
-          </RadioField>
-          <RadioField>
-            <Radio value="sqlite" color="white" />
-            <Label className="cursor-pointer">SQLite file</Label>
-          </RadioField>
-          <RadioField>
-            <Radio value="csv" color="white" />
-            <Label className="cursor-pointer">CSV file</Label>
-          </RadioField>
-          <RadioField>
-            <Radio value="excel" color="white" />
-            <Label className="cursor-pointer">Excel file</Label>
-          </RadioField>
-          <RadioField>
-            <Radio value="sas7bdat" color="white" />
-            <Label className="cursor-pointer">sas7bdat file</Label>
-          </RadioField>
+          {/* Database Connection Card */}
+          <div className="relative">
+            <label className="flex items-start gap-4 p-4 border border-gray-600 rounded-lg hover:border-blue-500 hover:bg-gray-750 transition-all duration-200 cursor-pointer">
+              <div className="flex items-center justify-center w-10 h-10 bg-blue-900 rounded-lg flex-shrink-0">
+                <CircleStackIcon className="w-5 h-5 text-blue-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <RadioField>
+                    <Radio value="database" color="white" />
+                  </RadioField>
+                  <span className="text-white font-medium">Database</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Postgres, MySQL, Snowflake, or MS SQL Server
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* SQLite File Card */}
+          <div className="relative">
+            <label className="flex items-start gap-4 p-4 border border-gray-600 rounded-lg hover:border-purple-500 hover:bg-gray-750 transition-all duration-200 cursor-pointer">
+              <div className="flex items-center justify-center w-10 h-10 bg-purple-900 rounded-lg flex-shrink-0">
+                <DocumentIcon className="w-5 h-5 text-purple-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <RadioField>
+                    <Radio value="sqlite" color="white" />
+                  </RadioField>
+                  <span className="text-white font-medium">SQLite</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Local SQLite database file
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* CSV File Card */}
+          <div className="relative">
+            <label className="flex items-start gap-4 p-4 border border-gray-600 rounded-lg hover:border-green-500 hover:bg-gray-750 transition-all duration-200 cursor-pointer">
+              <div className="flex items-center justify-center w-10 h-10 bg-green-900 rounded-lg flex-shrink-0">
+                <TableCellsIcon className="w-5 h-5 text-green-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <RadioField>
+                    <Radio value="csv" color="white" />
+                  </RadioField>
+                  <span className="text-white font-medium">CSV File</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Comma-separated values file
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* Excel File Card */}
+          <div className="relative">
+            <label className="flex items-start gap-4 p-4 border border-gray-600 rounded-lg hover:border-orange-500 hover:bg-gray-750 transition-all duration-200 cursor-pointer">
+              <div className="flex items-center justify-center w-10 h-10 bg-orange-900 rounded-lg flex-shrink-0">
+                <DocumentTextIcon className="w-5 h-5 text-orange-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <RadioField>
+                    <Radio value="excel" color="white" />
+                  </RadioField>
+                  <span className="text-white font-medium">Excel File</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  Microsoft Excel spreadsheet
+                </p>
+              </div>
+            </label>
+          </div>
+
+          {/* SAS File Card */}
+          <div className="relative md:col-span-2">
+            <label className="flex items-start gap-4 p-4 border border-gray-600 rounded-lg hover:border-indigo-500 hover:bg-gray-750 transition-all duration-200 cursor-pointer">
+              <div className="flex items-center justify-center w-10 h-10 bg-indigo-900 rounded-lg flex-shrink-0">
+                <DocumentIcon className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-2">
+                  <RadioField>
+                    <Radio value="sas7bdat" color="white" />
+                  </RadioField>
+                  <span className="text-white font-medium">SAS File</span>
+                </div>
+                <p className="text-gray-400 text-sm">
+                  SAS7BDAT statistical data file
+                </p>
+              </div>
+            </label>
+          </div>
         </RadioGroup>
-      </Fieldset>
+      </div>
       <div className="mt-10 max-w-2xl">
         {selectedRadio === "database" ? (
           <div>

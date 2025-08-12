@@ -36,5 +36,9 @@ export default {
   extend: {
     display: ["group-hover"],
   },
-  plugins: [require("@tailwindcss/forms"), require("flowbite/plugin")],
+  plugins: [
+    require("@tailwindcss/forms"), 
+    require("@tailwindcss/typography"),
+    require("flowbite/plugin")
+  ],
 };

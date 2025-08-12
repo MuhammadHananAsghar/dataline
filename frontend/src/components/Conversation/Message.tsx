@@ -18,13 +18,11 @@ const MessageIcon = ({ message }: { message: IMessageWithResultsOut }) => {
     <div className="flex flex-col shrink-0 items-center mt-2 ">
       <img src={logo} className="h-8 w-8 rounded-md" />
       {message.message.options?.secure_data && (
-        <a href="https://dataline.app/faq" target="_blank">
-          <InfoTooltip hoverText="No data was sent to or processed by the AI in this message. Click to learn more about how we do this.">
-            <div className="text-green-400/90 mt-3 bg-green-400/20 rounded-full hover:bg-green-400/40 transition-colors duration-150 cursor-pointer p-1">
-              <ShieldCheckIcon className="w-6 h-6" />
-            </div>
-          </InfoTooltip>
-        </a>
+        <InfoTooltip hoverText="No data was sent to or processed by the AI in this message. Click to learn more about how we do this.">
+          <div className="text-green-400/90 mt-3 bg-green-400/20 rounded-full hover:bg-green-400/40 transition-colors duration-150 cursor-pointer p-1">
+            <ShieldCheckIcon className="w-6 h-6" />
+          </div>
+        </InfoTooltip>
       )}
     </div>
   ) : avatarUrl ? (

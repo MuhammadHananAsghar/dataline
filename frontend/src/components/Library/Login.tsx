@@ -1,15 +1,24 @@
 import { useState } from "react";
-import logo from "@/assets/images/logo_rounded_sm.png";
+import logo from "@/assets/images/logo_md.png";
 import { useLogin } from "@/hooks/auth";
+import { useNavigate } from "@tanstack/react-router";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
   const { mutate: login } = useLogin();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login({ username, password });
+    login({ 
+      username, 
+      password 
+    }, {
+      onSuccess: () => {
+        navigate({ to: "/connections" });
+      }
+    });
   };
 
   return (
@@ -19,10 +28,10 @@ export default function Login() {
           <img
             className="mx-auto h-20 w-auto rounded-xl"
             src={logo}
-            alt="DataLine - AI data analysis and visualization platform"
+            alt="DMGAI - AI data analysis and visualization platform"
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
-            Sign in to your DataLine account
+            Sign in to your DMGAI account
           </h2>
         </div>
 
@@ -82,16 +91,6 @@ export default function Login() {
               </button>
             </div>
           </form>
-
-          <p className="mt-10 text-center text-sm text-gray-400">
-            Don't have access?{" "}
-            <a
-              href="mailto:tech@dataline.app"
-              className="font-semibold leading-6 text-indigo-400 hover:text-indigo-300"
-            >
-              Book a demo with us
-            </a>
-          </p>
         </div>
       </div>
     </>

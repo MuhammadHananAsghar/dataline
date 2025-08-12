@@ -8,7 +8,7 @@ from dataline.utils.appdirs import user_data_dir
 # https://pyinstaller.org/en/v6.6.0/runtime-information.html
 IS_BUNDLED = bool(getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"))
 
-USER_DATA_DIR = user_data_dir(appname="DataLine")
+USER_DATA_DIR = user_data_dir(appname="DMGAI")
 
 
 class EnvironmentType(str):
@@ -31,7 +31,7 @@ class Config(BaseSettings):
     sample_titanic_path: str = str(Path(__file__).parent.parent / "samples" / "titanic.sqlite3")
     sample_spotify_path: str = str(Path(__file__).parent.parent / "samples" / "spotify.sqlite3")
 
-    default_model: str = "gpt-3.5-turbo"
+    default_model: str = "gpt-5"
     templates_path: Path = Path(__file__).parent.parent / "templates"
     assets_path: Path = Path(__file__).parent.parent / "assets"
 
@@ -39,8 +39,8 @@ class Config(BaseSettings):
     release: str | None = None
 
     # HTTP Basic Authentication
-    auth_username: str | None = None
-    auth_password: str | None = None
+    auth_username: str = "admin"
+    auth_password: str = "admin"
 
     spa_mode: bool = False
 

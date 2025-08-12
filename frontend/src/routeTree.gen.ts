@@ -19,6 +19,7 @@ import { Route as LandingFaqImport } from './routes/_landing/faq'
 import { Route as LandingBlogImport } from './routes/_landing/blog'
 import { Route as LandingAboutImport } from './routes/_landing/about'
 import { Route as AppUserImport } from './routes/_app/user'
+import { Route as AppConnectionsImport } from './routes/_app/connections'
 import { Route as AppConnectionNewImport } from './routes/_app/connection/new'
 import { Route as AppConnectionConnectionIdImport } from './routes/_app/connection/$connectionId'
 import { Route as AppChatConversationIdImport } from './routes/_app/chat/$conversationId'
@@ -71,6 +72,12 @@ const AppUserRoute = AppUserImport.update({
   getParentRoute: () => AppRoute,
 } as any)
 
+const AppConnectionsRoute = AppConnectionsImport.update({
+  id: '/connections',
+  path: '/connections',
+  getParentRoute: () => AppRoute,
+} as any)
+
 const AppConnectionNewRoute = AppConnectionNewImport.update({
   id: '/connection/new',
   path: '/connection/new',
@@ -113,6 +120,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof LandingImport
       parentRoute: typeof rootRoute
+    }
+    '/_app/connections': {
+      id: '/_app/connections'
+      path: '/connections'
+      fullPath: '/connections'
+      preLoaderRoute: typeof AppConnectionsImport
+      parentRoute: typeof AppImport
     }
     '/_app/user': {
       id: '/_app/user'
@@ -176,6 +190,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface AppRouteChildren {
+  AppConnectionsRoute: typeof AppConnectionsRoute
   AppUserRoute: typeof AppUserRoute
   AppChatConversationIdRoute: typeof AppChatConversationIdRoute
   AppConnectionConnectionIdRoute: typeof AppConnectionConnectionIdRoute
@@ -183,6 +198,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppConnectionsRoute: AppConnectionsRoute,
   AppUserRoute: AppUserRoute,
   AppChatConversationIdRoute: AppChatConversationIdRoute,
   AppConnectionConnectionIdRoute: AppConnectionConnectionIdRoute,
@@ -211,6 +227,7 @@ const LandingRouteWithChildren =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof LandingRouteWithChildren
+  '/connections': typeof AppConnectionsRoute
   '/user': typeof AppUserRoute
   '/about': typeof LandingAboutRoute
   '/blog': typeof LandingBlogRoute
@@ -224,6 +241,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof LandingRouteWithChildren
+  '/connections': typeof AppConnectionsRoute
   '/user': typeof AppUserRoute
   '/about': typeof LandingAboutRoute
   '/blog': typeof LandingBlogRoute
@@ -239,6 +257,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/_landing': typeof LandingRouteWithChildren
+  '/_app/connections': typeof AppConnectionsRoute
   '/_app/user': typeof AppUserRoute
   '/_landing/about': typeof LandingAboutRoute
   '/_landing/blog': typeof LandingBlogRoute
@@ -254,6 +273,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/connections'
     | '/user'
     | '/about'
     | '/blog'
@@ -266,6 +286,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
+    | '/connections'
     | '/user'
     | '/about'
     | '/blog'
@@ -279,6 +300,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/_landing'
+    | '/_app/connections'
     | '/_app/user'
     | '/_landing/about'
     | '/_landing/blog'
@@ -323,6 +345,7 @@ export const routeTree = rootRoute
     "/_app": {
       "filePath": "_app.tsx",
       "children": [
+        "/_app/connections",
         "/_app/user",
         "/_app/chat/$conversationId",
         "/_app/connection/$connectionId",
@@ -337,6 +360,10 @@ export const routeTree = rootRoute
         "/_landing/faq",
         "/_landing/privacy"
       ]
+    },
+    "/_app/connections": {
+      "filePath": "_app/connections.tsx",
+      "parent": "/_app"
     },
     "/_app/user": {
       "filePath": "_app/user.tsx",

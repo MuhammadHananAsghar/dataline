@@ -1,7 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Landing } from "@components/Landing/Landing";
-import { ConnectionSelector } from "@/components/Connection/ConnectionSelector";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import Login from "@components/Library/Login";
+import { queryClient } from "@/queryClient";
+import { isAuthenticatedQuery } from "@/hooks/auth";
 
 export const Route = createFileRoute("/")({
-  component: process.env.NODE_ENV === "local" ? ConnectionSelector : Landing,
+  beforeLoad: async () => {
+    const isAuthenticated = await queryClient.fetchQuery(isAuthenticatedQuery());
+    if (isAuthenticated) {
+      throw redirect({ to: "/connections" });
+    }
+  },
+  component: Login,
 });

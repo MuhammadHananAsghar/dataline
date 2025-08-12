@@ -101,7 +101,7 @@ export function OpenAIKeyPopup() {
         Base URL path for API requests, leave blank if not using a proxy or
         service emulator.
       </AlertDescription>
-      <AlertBody>
+      {/* <AlertBody>
         <div className="flex">
           <SwitchField className="">
             <Label>Send anonymous & safe analytics</Label>
@@ -131,11 +131,11 @@ export function OpenAIKeyPopup() {
             />
           </SwitchField>
         </div>
-      </AlertBody>
-      <AlertDescription className="!text-xs">
+      </AlertBody> */}
+      {/* <AlertDescription className="!text-xs">
         We use Sentry to track errors and improve our service. You can disable
         this feature at any time.
-      </AlertDescription>
+      </AlertDescription> */}
       <AlertActions>
         <Button disabled={isPending} onClick={saveApiKey}>
           <div className="flex gap-2 items-center">
