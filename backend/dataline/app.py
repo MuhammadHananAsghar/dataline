@@ -38,7 +38,7 @@ class App(fastapi.FastAPI):
         self,
         lifespan: Callable[[Self], AsyncContextManager[Mapping[str, Any]]] | None = None,
     ) -> None:
-        super().__init__(title="Dataline API", lifespan=lifespan)
+        super().__init__(title="DMGAI API", lifespan=lifespan)
         self.add_middleware(
             CORSMiddleware,
             allow_origins=config.allowed_origins.split(",") if config.has_auth else ["*"],
