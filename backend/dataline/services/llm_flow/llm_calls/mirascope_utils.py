@@ -11,7 +11,7 @@ class OpenAIClientOptions(BaseModel):
     base_url: str | None = None
 
 
-AvailableModels = Literal["gpt-4o"] | Literal["gpt-4o-mini"]
+AvailableModels = Literal["gpt-5"] | Literal["gpt-5-mini"]
 
 _T = TypeVar("_T", bound=BaseModel)
 P = ParamSpec("P")

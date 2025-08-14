@@ -87,7 +87,7 @@ class SettingsService:
                 user_create.preferred_openai_model = (
                     config.default_model
                     if model_exists(user_create.openai_api_key, config.default_model, user_create.openai_base_url)
-                    else "gpt-4o"
+                    else "gpt-5"
                 )
             user = await self.user_repo.create(session, user_create)
             if data.sentry_enabled:  # by default, Sentry is off if no user in the db
