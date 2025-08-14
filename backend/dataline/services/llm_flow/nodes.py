@@ -6,6 +6,7 @@ from langchain_core.utils.function_calling import convert_to_openai_function
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END
 from openai import AuthenticationError, RateLimitError
+from dataline.config import config
 
 from dataline.errors import UserFacingError
 from dataline.models.llm_flow.schema import QueryResultSchema
@@ -50,7 +51,7 @@ class CallModelNode(Node):
     def run(cls, state: QueryGraphState) -> QueryGraphStateUpdate:
         # TODO: Consider replacing with mirascope
         model = ChatOpenAI(
-            model=state.options.llm_model,
+            model=config.default_model,
             base_url=state.options.openai_base_url,
             api_key=state.options.openai_api_key,
             temperature=0,
