@@ -39,8 +39,8 @@ class Config(BaseSettings):
     release: str | None = None
 
     # HTTP Basic Authentication
-    auth_username: str = "admin"
-    auth_password: str = "admin"
+    auth_username: str = "dmgai_admin"
+    auth_password: str = "dmgai_admin@123"
 
     spa_mode: bool = False
 
