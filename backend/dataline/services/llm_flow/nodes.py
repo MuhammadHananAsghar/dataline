@@ -49,6 +49,9 @@ class CallModelNode(Node):
     @classmethod
     def run(cls, state: QueryGraphState) -> QueryGraphStateUpdate:
         # TODO: Consider replacing with mirascope
+        print("model", state.options.llm_model)
+        print("base_url", state.options.openai_base_url)
+        print("api_key", state.options.openai_api_key)
         model = ChatOpenAI(
             model=state.options.llm_model,
             base_url=state.options.openai_base_url,
