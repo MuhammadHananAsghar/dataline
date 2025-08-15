@@ -7,6 +7,15 @@ import { InfoTooltip } from "@components/Library/Tooltip";
 import { MessageResultRenderer } from "./MessageResultRenderer";
 import { Spinner } from "../Spinner/Spinner";
 
+import { remark } from 'remark';
+import html from 'remark-html';
+
+
+const renderMarkdown = (markdown: string) => {
+  const result = remark().use(html).processSync(markdown);
+  return result.toString();
+};
+
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
@@ -64,16 +73,24 @@ export const Message = ({
             {message.message.content && (
               <div className="flex flex-grow">
                 <div className="min-h-[20px] flex whitespace-pre-wrap break-words">
-                  <div className="markdown prose w-full break-words dark:prose-invert dark">
+                  <div className="markdown  w-full break-words dark:prose-invert dark">
                     <div className="flex gap-2">
                       {streaming && (
                         <div className="flex items-center">
                           <Spinner />
                         </div>
                       )}
-                      <p className=" leading-loose">
-                        {message.message.content}
-                      </p>
+                      <div
+                        // className=" leading-loose"
+                        className="list-disc"
+                        dangerouslySetInnerHTML={{
+                          __html: renderMarkdown(
+                            message.message.content
+                          ),
+                        }}
+                      />
+                        {/* {renderMarkdown(message.message.content)}
+                      </div> */}
                     </div>
                   </div>
                 </div>

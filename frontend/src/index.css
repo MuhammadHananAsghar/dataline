@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root { 
   --gradient-x: 0;
   --gradient-y: 0;
 }
