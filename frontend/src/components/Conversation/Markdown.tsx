@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
+// import rehypeRaw from 'rehype-raw';
+// import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 
 const components: Partial<Components> = {
@@ -134,7 +134,7 @@ const components: Partial<Components> = {
 };
 
 const remarkPlugins = [remarkGfm];
-const rehypePlugins = [rehypeRaw, rehypeSanitize];
+// const rehypePlugins = [rehypeRaw, rehypeSanitize];
 
 const NonMemoizedMarkdown = ({ children }: { children: string }) => {
   return (

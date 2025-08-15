@@ -1,21 +1,21 @@
-import { Field, Fieldset, Label, Legend } from "@catalyst/fieldset";
-import { Radio, RadioField, RadioGroup } from "@catalyst/radio";
-import React, { useRef, useState } from "react";
-import { Input } from "@catalyst/input";
-import { Button } from "@catalyst/button";
-import { enqueueSnackbar } from "notistack";
-import { useNavigate } from "@tanstack/react-router";
-import { 
-  CloudArrowUpIcon, 
-  DocumentCheckIcon,
-  CircleStackIcon,
-  DocumentTextIcon,
-  TableCellsIcon,
-  DocumentIcon
-} from "@heroicons/react/24/solid";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useCreateConnection, useCreateFileConnection } from "@/hooks";
+import { Button } from "@catalyst/button";
+import { Field, Label } from "@catalyst/fieldset";
+import { Input } from "@catalyst/input";
+import { Radio, RadioField, RadioGroup } from "@catalyst/radio";
 import { DatabaseFileType } from "@components/Library/types";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  CircleStackIcon,
+  CloudArrowUpIcon,
+  DocumentCheckIcon,
+  DocumentIcon,
+  DocumentTextIcon,
+  TableCellsIcon
+} from "@heroicons/react/24/solid";
+import { useNavigate } from "@tanstack/react-router";
+import { enqueueSnackbar } from "notistack";
+import React, { useRef, useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");

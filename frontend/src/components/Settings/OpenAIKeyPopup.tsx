@@ -1,3 +1,4 @@
+import { useUpdateUserInfo } from "@/hooks";
 import {
   Alert,
   AlertActions,
@@ -6,21 +7,18 @@ import {
   AlertTitle,
 } from "@components/Catalyst/alert";
 import { Button } from "@components/Catalyst/button";
-import { Label } from "@components/Catalyst/fieldset";
-import { SwitchField, Switch } from "@components/Catalyst/switch";
-import { useState } from "react";
+import { Input } from "@components/Catalyst/input";
 import MaskedInput from "@components/Settings/MaskedInput";
 import { enqueueSnackbar } from "notistack";
-import { useUpdateUserInfo } from "@/hooks";
+import { useState } from "react";
 import { Spinner } from "../Spinner/Spinner";
-import { Input } from "@components/Catalyst/input";
 
 export function OpenAIKeyPopup() {
   const [isOpen, setIsOpen] = useState(true);
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
-  const [sentryEnabled, setSentryEnabled] = useState(true);
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const [sentryEnabled] = useState(true);
+  const [analyticsEnabled] = useState(true);
 
   const { mutate, isPending } = useUpdateUserInfo({
     onSuccess() {
