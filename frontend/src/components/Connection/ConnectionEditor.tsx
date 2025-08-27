@@ -15,6 +15,7 @@ import { Button } from "../Catalyst/button";
 import { Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Switch } from "@components/Catalyst/switch";
+import { Textarea } from "@components/Catalyst/textarea";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -183,6 +184,7 @@ export const ConnectionEditor = () => {
   const [editFields, setEditFields] = useState<IEditConnection>({
     name: "",
     dsn: "",
+    system_prompt: "",
   });
 
   useEffect(() => {
@@ -190,6 +192,7 @@ export const ConnectionEditor = () => {
       name: connection?.name || prev.name,
       dsn: connection?.dsn || prev.dsn,
       options: connection?.options || prev.options,
+      system_prompt: connection?.system_prompt || prev.system_prompt,
     }));
   }, [connection]);
 
@@ -240,12 +243,30 @@ export const ConnectionEditor = () => {
 
     if (!connectionId) return;
 
+    // Validate system prompt
+    if (!editFields.system_prompt?.trim()) {
+      enqueueSnackbar({
+        variant: "error",
+        message: "System prompt is required. Please provide instructions for the AI to understand your database.",
+      });
+      return;
+    }
+    
+    if (editFields.system_prompt.trim().length < 10) {
+      enqueueSnackbar({
+        variant: "error",
+        message: "System prompt should have at least 10 characters. Please provide more detailed instructions.",
+      });
+      return;
+    }
+
     updateConnection({
       id: connectionId,
       payload: {
         name: editFields.name,
         ...(editFields.dsn !== connection?.dsn && { dsn: editFields.dsn }), // only add dsn if it changed
         options: editFields.options,
+        ...(editFields.system_prompt !== connection?.system_prompt && { system_prompt: editFields.system_prompt }),
       },
     });
   }
@@ -346,6 +367,58 @@ export const ConnectionEditor = () => {
                 )}
               />
             </div>
+          </div>
+
+          <div className="sm:col-span-6 max-w-6xl">
+            <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-600/30 rounded-lg p-4 mb-4">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <svg className="w-5 h-5 text-yellow-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-yellow-400 font-semibold text-sm mb-2">
+                    ⚠️ System Prompt is Critical for AI Performance
+                  </h4>
+                  <p className="text-yellow-100 text-sm leading-relaxed mb-3">
+                    The system prompt directly controls how the AI understands and queries your database. A well-crafted prompt significantly improves query accuracy and results. Changes will affect all future conversations.
+                  </p>
+                  <div className="bg-black/20 rounded p-3 border border-yellow-600/20">
+                    <p className="text-yellow-100 text-xs font-medium mb-2">📝 Guidelines for effective system prompts:</p>
+                    <ul className="text-yellow-100 text-xs space-y-1">
+                      <li>• <strong>Describe your data:</strong> "This is a sales database with customer orders, products, and inventory"</li>
+                      <li>• <strong>Specify important relationships:</strong> "Orders are linked to customers via customer_id"</li>
+                      <li>• <strong>Mention key business rules:</strong> "Revenue should exclude returned items"</li>
+                      <li>• <strong>Define terminology:</strong> "Active customers are those with orders in the last 90 days"</li>
+                      <li>• <strong>Set expectations:</strong> "Always format dates as YYYY-MM-DD and round currency to 2 decimals"</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <label
+              htmlFor="system_prompt"
+              className="block text-white font-medium text-base mb-2"
+            >
+              System Prompt <span className="text-red-400">*</span>
+            </label>
+            <Textarea
+              id="system_prompt"
+              name="system_prompt"
+              rows={6}
+              value={editFields.system_prompt || ""}
+              onChange={(e) => {
+                setEditFields({ ...editFields, system_prompt: e.target.value });
+                setUnsavedChanges(true);
+              }}
+              placeholder="Example: This is an e-commerce database containing customer orders, products, and inventory data. The 'orders' table links to 'customers' via customer_id and to 'products' via product_id. Revenue calculations should exclude orders with status 'cancelled' or 'returned'. Always format monetary values with 2 decimal places and dates as YYYY-MM-DD."
+              className="mt-2 bg-gray-900 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500 min-h-[120px]"
+            />
+            <p className="mt-2 text-sm text-gray-400">
+              💡 <strong>Tip:</strong> The more context you provide about your data structure and business logic, the better the AI will perform. <span className="text-yellow-400">Minimum 10 characters required.</span>
+            </p>
           </div>
 
           <div className="sm:col-span-6">

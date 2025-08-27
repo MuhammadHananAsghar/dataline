@@ -2,6 +2,7 @@ import { useCreateConnection, useCreateFileConnection } from "@/hooks";
 import { Button } from "@catalyst/button";
 import { Field, Label } from "@catalyst/fieldset";
 import { Input } from "@catalyst/input";
+import { Textarea } from "@catalyst/textarea";
 import { Radio, RadioField, RadioGroup } from "@catalyst/radio";
 import { DatabaseFileType } from "@components/Library/types";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -148,6 +149,7 @@ const ConnectionCreator = ({ name = null }: { name: string | null }) => {
   const [selectedRadio, setSelectedRadio] = useState<RadioValue>(null);
   const [dsn, setDsn] = useState<string | null>(null);
   const [file, setFile] = useState<File>();
+  const [systemPrompt, setSystemPrompt] = useState<string>("");
   const { mutate: createConnection, isPending } = useCreateConnection();
   const { mutate: createFileConnection, isPending: isFilePending } =
     useCreateFileConnection();
@@ -163,8 +165,24 @@ const ConnectionCreator = ({ name = null }: { name: string | null }) => {
       });
       return;
     }
+    
+    if (!systemPrompt.trim()) {
+      enqueueSnackbar({
+        variant: "error",
+        message: "System prompt is required. Please provide instructions for the AI to understand your database.",
+      });
+      return;
+    }
+    
+    if (systemPrompt.trim().length < 10) {
+      enqueueSnackbar({
+        variant: "error",
+        message: "System prompt should have at least 10 characters. Please provide more detailed instructions.",
+      });
+      return;
+    }
     createConnection(
-      { dsn, name, isSample: false },
+      { dsn, name, isSample: false, systemPrompt },
       {
         onSuccess: () => {
           enqueueSnackbar({
@@ -193,6 +211,22 @@ const ConnectionCreator = ({ name = null }: { name: string | null }) => {
       });
       return;
     }
+    
+    if (!systemPrompt.trim()) {
+      enqueueSnackbar({
+        variant: "error",
+        message: "System prompt is required. Please provide instructions for the AI to understand your data.",
+      });
+      return;
+    }
+    
+    if (systemPrompt.trim().length < 10) {
+      enqueueSnackbar({
+        variant: "error",
+        message: "System prompt should have at least 10 characters. Please provide more detailed instructions.",
+      });
+      return;
+    }
 
     // Limit file size to 500MB
     if (file.size > 1024 * 1024 * 500) {
@@ -204,7 +238,7 @@ const ConnectionCreator = ({ name = null }: { name: string | null }) => {
     }
 
     createFileConnection(
-      { file, name, type },
+      { file, name, type, systemPrompt },
       {
         onSuccess: () => {
           enqueueSnackbar({
@@ -332,7 +366,58 @@ const ConnectionCreator = ({ name = null }: { name: string | null }) => {
           </div>
         </RadioGroup>
       </div>
-      <div className="mt-10 max-w-2xl">
+      
+      {/* System Prompt Field - shown for all connection types */}
+      {selectedRadio && (
+        <div className="mt-8 max-w-4xl">
+          <div className="bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-600/30 rounded-lg p-4 mb-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <svg className="w-5 h-5 text-yellow-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-yellow-400 font-semibold text-sm mb-2">
+                  ⚠️ System Prompt is Critical for AI Performance
+                </h4>
+                <p className="text-yellow-100 text-sm leading-relaxed mb-3">
+                  The system prompt directly controls how the AI understands and queries your database. A well-crafted prompt significantly improves query accuracy and results.
+                </p>
+                <div className="bg-black/20 rounded p-3 border border-yellow-600/20">
+                  <p className="text-yellow-100 text-xs font-medium mb-2">📝 Guidelines for effective system prompts:</p>
+                  <ul className="text-yellow-100 text-xs space-y-1">
+                    <li>• <strong>Describe your data:</strong> "This is a sales database with customer orders, products, and inventory"</li>
+                    <li>• <strong>Specify important relationships:</strong> "Orders are linked to customers via customer_id"</li>
+                    <li>• <strong>Mention key business rules:</strong> "Revenue should exclude returned items"</li>
+                    <li>• <strong>Define terminology:</strong> "Active customers are those with orders in the last 90 days"</li>
+                    <li>• <strong>Set expectations:</strong> "Always format dates as YYYY-MM-DD and round currency to 2 decimals"</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <Field>
+            <Label className="text-white font-medium text-base">
+              System Prompt <span className="text-red-400">*</span>
+            </Label>
+            <Textarea
+              rows={6}
+              placeholder="Example: This is an e-commerce database containing customer orders, products, and inventory data. The 'orders' table links to 'customers' via customer_id and to 'products' via product_id. Revenue calculations should exclude orders with status 'cancelled' or 'returned'. Always format monetary values with 2 decimal places and dates as YYYY-MM-DD."
+              value={systemPrompt}
+              onChange={(e) => setSystemPrompt(e.target.value)}
+              className="mt-2 bg-gray-900 border-gray-600 text-white focus:border-blue-500 focus:ring-blue-500 min-h-[120px]"
+              required
+            />
+            <p className="mt-2 text-sm text-gray-400">
+              💡 <strong>Tip:</strong> The more context you provide about your data structure and business logic, the better the AI will perform. <span className="text-yellow-400">Minimum 10 characters required.</span>
+            </p>
+          </Field>
+        </div>
+      )}
+      
+      <div className="mt-6 max-w-2xl">
         {selectedRadio === "database" ? (
           <div>
             <Field>

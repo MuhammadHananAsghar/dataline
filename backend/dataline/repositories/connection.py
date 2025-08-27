@@ -29,6 +29,7 @@ class ConnectionCreate(BaseModel):
     type: str
     is_sample: bool = False
     options: ConnectionOptions | None = None
+    system_prompt: str
 
 
 class ConnectionUpdate(BaseModel):
@@ -41,6 +42,7 @@ class ConnectionUpdate(BaseModel):
     type: str | None = None
     is_sample: bool | None = None
     options: ConnectionOptions | None = None
+    system_prompt: str
 
 
 class ConnectionRepository(BaseRepository[ConnectionModel, ConnectionCreate, ConnectionUpdate]):

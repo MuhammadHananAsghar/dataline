@@ -35,7 +35,7 @@ async def connect_db(
 ) -> SuccessResponse[ConnectionOut]:
     background_tasks.add_task(posthog_capture, "connection_created", properties={"is_sample": False, "is_file": False})
 
-    connection = await connection_service.create_connection(session, dsn=req.dsn, name=req.name, is_sample=False)
+    connection = await connection_service.create_connection(session, dsn=req.dsn, name=req.name, is_sample=False, system_prompt=req.system_prompt)
     return SuccessResponse(data=connection)
 
 
@@ -65,6 +65,7 @@ async def connect_db_from_file(
     file: UploadFile,
     type: Annotated[FileConnectionType, Body(...)],
     name: Annotated[str, Body(...)],
+    system_prompt: Annotated[str, Body(...)],
     session: Annotated[AsyncSession, Depends(get_session)],
     connection_service: Annotated[ConnectionService, Depends(ConnectionService)],
     background_tasks: BackgroundTasks,
@@ -76,25 +77,25 @@ async def connect_db_from_file(
         if not is_valid_sqlite_file(file):
             raise HTTPException(status_code=400, detail="File provided must be a valid SQLite file.")
 
-        connection = await connection_service.create_sqlite_connection(session, file.file, name)
+        connection = await connection_service.create_sqlite_connection(session, file.file, name, system_prompt=system_prompt)
         return SuccessResponse(data=connection)
 
     elif type == FileConnectionType.csv:
         # Convert CSV to SQLite and create connection
         # TODO: Handle pandas invalid CSV error and forward to user
-        connection = await connection_service.create_csv_connection(session, file, name)
+        connection = await connection_service.create_csv_connection(session, file, name, system_prompt=system_prompt)
         return SuccessResponse(data=connection)
 
     elif type == FileConnectionType.sas7bdat:
         # Convert sas7bdat to SQLite and create connection
         # TODO: Handle pandas invalid sas7bdat error and forward to user
-        connection = await connection_service.create_sas7bdat_connection(session, file, name)
+        connection = await connection_service.create_sas7bdat_connection(session, file, name, system_prompt=system_prompt)
         return SuccessResponse(data=connection)
 
     elif type == FileConnectionType.excel:
         # Convert Excel to SQLite and create connection
         # TODO: Handle possible errors and forward
-        connection = await connection_service.create_excel_connection(session, file, name)
+        connection = await connection_service.create_excel_connection(session, file, name, system_prompt=system_prompt)
         return SuccessResponse(data=connection)
 
 

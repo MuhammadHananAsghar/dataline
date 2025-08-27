@@ -33,6 +33,7 @@ class ConnectionModel(DBModel, UUIDMixin, kw_only=True):
     dialect: Mapped[str | None] = mapped_column("dialect", String)
     is_sample: Mapped[bool] = mapped_column("is_sample", Boolean, nullable=False, default=False, server_default="false")
     options: Mapped[ConnectionOptions | None] = mapped_column("options", JSON, nullable=True)
+    system_prompt: Mapped[str] = mapped_column("system_prompt", String, nullable=False)
 
     # Relationships
     conversations: Mapped[list["ConversationModel"]] = relationship("ConversationModel", back_populates="connection")

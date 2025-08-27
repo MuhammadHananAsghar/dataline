@@ -126,12 +126,14 @@ export interface IConnection {
   dialect: string;
   is_sample: boolean;
   options?: IConnectionOptions;
+  system_prompt: string;
 }
 
 export interface IEditConnection {
   name: string;
   dsn?: string;
   options?: IConnectionOptions;
+  system_prompt?: string;
 }
 
 export interface IUserInfo {

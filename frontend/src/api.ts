@@ -59,7 +59,8 @@ type ConnectResult = ApiResponse<IConnection>;
 const createConnection = async (
   connectionString: string,
   name: string,
-  isSample: boolean
+  isSample: boolean,
+  systemPrompt: string
 ): Promise<ConnectResult> => {
   const response = await backendApi<ConnectResult>({
     url: "/connect",
@@ -68,6 +69,7 @@ const createConnection = async (
       dsn: connectionString,
       name: name,
       is_sample: isSample,
+      system_prompt: systemPrompt,
     },
   });
   return response.data;
@@ -88,12 +90,14 @@ const createSampleConnection = async (
 const createFileConnection = async (
   file: File,
   name: string,
-  type: DatabaseFileType
+  type: DatabaseFileType,
+  systemPrompt: string
 ): Promise<ConnectResult> => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("name", name);
   formData.append("type", type);
+  formData.append("system_prompt", systemPrompt);
   const response = await backendApi<ConnectResult>({
     url: "/connect/file",
     method: "post",

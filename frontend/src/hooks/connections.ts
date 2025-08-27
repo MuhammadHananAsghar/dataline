@@ -108,11 +108,13 @@ export function useCreateConnection(options = {}) {
       dsn,
       name,
       isSample,
+      systemPrompt,
     }: {
       dsn: string;
       name: string;
       isSample: boolean;
-    }) => api.createConnection(dsn, name, isSample),
+      systemPrompt: string;
+    }) => api.createConnection(dsn, name, isSample, systemPrompt),
     onSettled() {
       queryClient.invalidateQueries({
         queryKey: getConnectionsQuery().queryKey,
@@ -145,11 +147,13 @@ export function useCreateFileConnection(options = {}) {
       file,
       name,
       type,
+      systemPrompt,
     }: {
       file: File;
       name: string;
       type: DatabaseFileType;
-    }) => api.createFileConnection(file, name, type),
+      systemPrompt: string;
+    }) => api.createFileConnection(file, name, type, systemPrompt),
     onSettled() {
       queryClient.invalidateQueries({
         queryKey: getConnectionsQuery().queryKey,

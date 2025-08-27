@@ -148,8 +148,8 @@ class ConversationService:
         connection = await self.connection_service.get_connection(session, connection_id=conversation.connection_id)
         user_with_model_details = await self.settings_service.get_model_details(session)
 
-        # Create query graph
-        query_graph = QueryGraphService(connection=connection)
+        # Create query graph with system prompt
+        query_graph = QueryGraphService(connection=connection, system_prompt=connection.system_prompt)
         history = await self.get_conversation_history(session, conversation_id)
 
         messages: list[BaseMessage] = []

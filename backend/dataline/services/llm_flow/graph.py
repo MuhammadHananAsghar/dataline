@@ -41,7 +41,7 @@ def add_conditional_edge(graph: StateGraph, source: Type[Node], condition: Type[
 
 
 class QueryGraphService:
-    def __init__(self, connection: ConnectionProtocol) -> None:
+    def __init__(self, connection: ConnectionProtocol, system_prompt: str | None = None) -> None:
         # Enable this try catch once we support errors with streaming responses
         try:
             self.db = SQLDatabase.from_dataline_connection(connection)
@@ -54,6 +54,7 @@ class QueryGraphService:
         all_tools = self.toolkit.get_tools() + [ChartGeneratorTool()]
         self.tool_executor = ToolExecutor(tools=all_tools)
         self.tracer = None  # no tracing by default
+        self.system_prompt = system_prompt
 
     async def query(
         self, query: str, options: QueryOptions, history: Sequence[BaseMessage] | None = None
@@ -107,16 +108,22 @@ class QueryGraphService:
     ):
         prefix = SQL_PREFIX
         prefix = prefix.format(dialect=self.toolkit.dialect, top_k=top_k)
+        
+        # If we have a custom system prompt, prepend it to the standard SQL prefix
+        if self.system_prompt:
+            system_content = f"{self.system_prompt}\n\n{prefix}"
+        else:
+            system_content = prefix
 
         if not history:
             return [
-                SystemMessage(content=prefix),
+                SystemMessage(content=system_content),
                 HumanMessage(content=query),
                 AIMessage(content=suffix),
             ]
         else:
             return [
-                SystemMessage(content=prefix),
+                SystemMessage(content=system_content),
                 *history,
                 HumanMessage(content=query),
                 AIMessage(content=suffix),

@@ -114,7 +114,11 @@ class ConnectionService:
     async def update_connection(
         self, session: AsyncSession, connection_uuid: UUID, data: ConnectionUpdateIn
     ) -> ConnectionOut:
-        update = ConnectionUpdate()
+        # Get current connection to use existing values as defaults
+        current_connection = await self.get_connection(session, connection_uuid)
+        
+        # Create update object with current system_prompt as default
+        update = ConnectionUpdate(system_prompt=current_connection.system_prompt)
         if data.dsn:
             # Check if connection already exists and is different from the current one
             existing_connection = await self.check_dsn_already_exists_or_none(session, data.dsn)
@@ -126,7 +130,6 @@ class ConnectionService:
             update.dsn = str(db._engine.url.render_as_string(hide_password=False))
             update.database = db._engine.url.database
             update.dialect = db.dialect
-            current_connection = await self.get_connection(session, connection_uuid)
             old_options = (
                 ConnectionOptions.model_validate(current_connection.options) if current_connection.options else None
             )
@@ -137,6 +140,9 @@ class ConnectionService:
 
         if data.name:
             update.name = data.name
+            
+        if data.system_prompt is not None:
+            update.system_prompt = data.system_prompt
 
         updated_connection = await self.connection_repo.update_by_uuid(session, connection_uuid, update)
         return ConnectionOut.model_validate(updated_connection)
@@ -146,6 +152,7 @@ class ConnectionService:
         session: AsyncSession,
         dsn: str,
         name: str,
+        system_prompt: str,
         connection_type: str | None = None,
         is_sample: bool = False,
     ) -> ConnectionOut:
@@ -176,12 +183,13 @@ class ConnectionService:
                 type=connection_type,
                 is_sample=is_sample,
                 options=ConnectionOptions(schemas=connection_schemas),
+                system_prompt=system_prompt,
             ),
         )
         return ConnectionOut.model_validate(connection)
 
     async def create_sqlite_connection(
-        self, session: AsyncSession, file: BinaryIO, name: str, is_sample: bool = False
+        self, session: AsyncSession, file: BinaryIO, name: str, is_sample: bool = False, system_prompt: str | None = None
     ) -> ConnectionOut:
         generated_name = generate_short_uuid() + ".sqlite"
         file_path = Path(config.data_directory) / generated_name
@@ -190,9 +198,9 @@ class ConnectionService:
 
         # Create connection with the locally copied file
         dsn = get_sqlite_dsn(str(file_path.absolute()))
-        return await self.create_connection(session, dsn=dsn, name=name, is_sample=is_sample)
+        return await self.create_connection(session, dsn=dsn, name=name, is_sample=is_sample, system_prompt=system_prompt)
 
-    async def create_csv_connection(self, session: AsyncSession, file: UploadFile, name: str) -> ConnectionOut:
+    async def create_csv_connection(self, session: AsyncSession, file: UploadFile, name: str, system_prompt: str | None = None) -> ConnectionOut:
         generated_name = generate_short_uuid() + ".sqlite"
         file_path = Path(config.data_directory) / generated_name
 
@@ -210,10 +218,10 @@ class ConnectionService:
         # Create connection with the locally copied file
         dsn = get_sqlite_dsn(str(file_path.absolute()))
         return await self.create_connection(
-            session, dsn=dsn, name=name, connection_type=ConnectionType.csv.value, is_sample=False
+            session, dsn=dsn, name=name, connection_type=ConnectionType.csv.value, is_sample=False, system_prompt=system_prompt
         )
 
-    async def create_excel_connection(self, session: AsyncSession, file: UploadFile, name: str) -> ConnectionOut:
+    async def create_excel_connection(self, session: AsyncSession, file: UploadFile, name: str, system_prompt: str | None = None) -> ConnectionOut:
         generated_name = generate_short_uuid() + ".sqlite"
         file_path = Path(config.data_directory) / generated_name
 
@@ -226,10 +234,10 @@ class ConnectionService:
         # Create connection with the locally copied file
         dsn = get_sqlite_dsn(str(file_path.absolute()))
         return await self.create_connection(
-            session, dsn=dsn, name=name, connection_type=ConnectionType.excel.value, is_sample=False
+            session, dsn=dsn, name=name, connection_type=ConnectionType.excel.value, is_sample=False, system_prompt=system_prompt
         )
 
-    async def create_sas7bdat_connection(self, session: AsyncSession, file: UploadFile, name: str) -> ConnectionOut:
+    async def create_sas7bdat_connection(self, session: AsyncSession, file: UploadFile, name: str, system_prompt: str | None = None) -> ConnectionOut:
         generated_name = generate_short_uuid() + ".sqlite"
         file_path = Path(config.data_directory) / generated_name
 
@@ -269,7 +277,7 @@ class ConnectionService:
             # Create connection with the locally copied file
             dsn = get_sqlite_dsn(str(file_path.absolute()))
             return await self.create_connection(
-                session, dsn=dsn, name=name, connection_type=ConnectionType.sas.value, is_sample=False
+                session, dsn=dsn, name=name, connection_type=ConnectionType.sas.value, is_sample=False, system_prompt=system_prompt
             )
         finally:
             # Clean up the temporary file

@@ -34,6 +34,7 @@ class Connection(BaseModel):
     type: str
     is_sample: bool
     options: Optional[ConnectionOptions] = None
+    system_prompt: str
 
 
 class ConnectionOut(Connection):
@@ -43,6 +44,7 @@ class ConnectionOut(Connection):
 class ConnectionIn(BaseModel):
     dsn: str = Field(min_length=3)
     name: str
+    system_prompt: str = Field(min_length=10, description="Instructions for the AI to understand your database")
 
     @field_validator("dsn")
     def validate_dsn_format(cls, value: str) -> str:
@@ -148,6 +150,7 @@ class ConnectRequest(BaseModel):
     dsn: str = Field(min_length=3)
     name: str
     is_sample: bool = False
+    system_prompt: str = Field(min_length=10, description="Instructions for the AI to understand your database")
 
     @field_validator("dsn")
     def validate_dsn_format(cls, value: str) -> str:
@@ -158,6 +161,7 @@ class ConnectionUpdateIn(BaseModel):
     name: Optional[str] = None
     dsn: Optional[str] = None
     options: Optional[ConnectionOptions] = None
+    system_prompt: Optional[str] = Field(None, min_length=10, description="Instructions for the AI to understand your database")
 
     @field_validator("dsn")
     def validate_dsn_format(cls, value: str) -> str:
